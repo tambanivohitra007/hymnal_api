@@ -3,56 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hymnal</title>
+  <title>Hymnal API</title>
   <style>
     :root {
-      --bg: #f8f9fa;
+      --bg: #f7f8fc;
       --card: #ffffff;
-      --primary: #2c5282;
-      --primary-light: #ebf4ff;
-      --text: #1a202c;
-      --text-muted: #718096;
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --text: #1e293b;
+      --text-muted: #64748b;
       --border: #e2e8f0;
-      --radius: 8px;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
     }
 
-    /* Header */
-    header {
-      background: var(--primary);
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 50;
+      padding: 0 1.5rem;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: white;
-      padding: 1.5rem 1rem;
+      padding: 5rem 1.5rem 4rem;
       text-align: center;
     }
-    header h1 { font-size: 1.5rem; font-weight: 600; }
-    header p { font-size: 0.875rem; opacity: 0.85; margin-top: 0.25rem; }
+    .hero h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      opacity: 0.85;
+      max-width: 520px;
+      margin: 0 auto 2rem;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+    .hero-stat {
+      text-align: center;
+    }
+    .hero-stat .num {
+      font-size: 2rem;
+      font-weight: 800;
+      display: block;
+    }
+    .hero-stat .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-white {
+      background: white;
+      color: var(--primary);
+    }
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+    .btn-outline:hover { border-color: white; }
 
-    /* Container */
-    .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
+    /* Sections */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
 
-    /* Search */
+    .section {
+      padding: 4rem 0;
+    }
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    /* Browse section */
+    #browse { padding-top: 2.5rem; }
     .search-box {
       display: flex;
       gap: 0.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     .search-box input {
       flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
+      padding: 0.8rem 1.2rem;
+      border: 2px solid var(--border);
       border-radius: var(--radius);
       font-size: 1rem;
       outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: var(--card);
     }
-    .search-box input:focus { border-color: var(--primary); }
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
 
-    /* Category tabs */
     .categories {
       display: flex;
       gap: 0.5rem;
@@ -60,13 +179,14 @@
       margin-bottom: 1rem;
     }
     .cat-btn {
-      padding: 0.4rem 0.75rem;
+      padding: 0.4rem 0.85rem;
       border: 1px solid var(--border);
       border-radius: 20px;
       background: var(--card);
       cursor: pointer;
       font-size: 0.8rem;
       color: var(--text-muted);
+      font-weight: 500;
       transition: all 0.15s;
     }
     .cat-btn:hover { border-color: var(--primary); color: var(--primary); }
@@ -76,179 +196,486 @@
       border-color: var(--primary);
     }
 
-    /* Stats */
     .stats {
       font-size: 0.85rem;
       color: var(--text-muted);
       margin-bottom: 0.75rem;
+      font-weight: 500;
     }
 
-    /* Hymn list */
-    .hymn-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .hymn-list { display: flex; flex-direction: column; gap: 0.4rem; }
     .hymn-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.15rem;
       cursor: pointer;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      box-shadow: var(--shadow);
     }
-    .hymn-card:hover { border-color: var(--primary); }
+    .hymn-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(79,70,229,0.1);
+    }
     .hymn-num {
-      font-weight: 700;
+      font-weight: 800;
       color: var(--primary);
       min-width: 3rem;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
     }
     .hymn-info { flex: 1; margin-left: 0.75rem; }
-    .hymn-title { font-weight: 500; }
-    .hymn-cat {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
+    .hymn-title { font-weight: 600; font-size: 0.95rem; }
+    .hymn-cat { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
     .hymn-key {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--primary);
       background: var(--primary-light);
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
     }
 
-    /* Pagination */
     .pagination {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
       margin-top: 1.5rem;
     }
     .pagination button {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.1rem;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--card);
       cursor: pointer;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.15s;
+      box-shadow: var(--shadow);
     }
-    .pagination button:disabled { opacity: 0.4; cursor: default; }
+    .pagination button:disabled { opacity: 0.35; cursor: default; }
     .pagination button:not(:disabled):hover {
       border-color: var(--primary);
       color: var(--primary);
     }
-    .page-info { font-size: 0.85rem; color: var(--text-muted); }
+    .page-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
     /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(15,23,42,0.55);
+      backdrop-filter: blur(4px);
       z-index: 100;
       justify-content: center;
       align-items: start;
-      padding: 2rem 1rem;
+      padding: 3rem 1rem;
       overflow-y: auto;
     }
     .modal-overlay.open { display: flex; }
     .modal {
       background: var(--card);
-      border-radius: var(--radius);
-      max-width: 700px;
+      border-radius: 14px;
+      max-width: 680px;
       width: 100%;
-      padding: 2rem;
+      padding: 2.5rem;
       position: relative;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+      animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .modal-close {
       position: absolute;
       top: 1rem;
       right: 1rem;
-      background: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg);
       border: none;
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       cursor: pointer;
       color: var(--text-muted);
-      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
     }
-    .modal-close:hover { color: var(--text); }
-    .modal h2 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .modal-close:hover { background: var(--border); color: var(--text); }
+    .modal h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      padding-right: 2rem;
+    }
     .modal-meta {
       font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .modal-meta span { margin-right: 1rem; }
-    .verse { margin-bottom: 1.25rem; }
+    .modal-meta span {
+      background: var(--bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .verse { margin-bottom: 1.5rem; }
     .verse-label {
-      font-weight: 700;
-      font-size: 0.8rem;
+      font-weight: 800;
+      font-size: 0.75rem;
       color: var(--primary);
-      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
     }
     .verse-text {
       white-space: pre-line;
-      line-height: 1.8;
+      line-height: 1.9;
+      font-size: 1.02rem;
     }
 
-    /* API info */
-    .api-section {
-      margin-top: 2rem;
-      padding: 1rem;
+    /* Collections grid */
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .collection-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .api-section h3 { font-size: 1rem; margin-bottom: 0.5rem; }
-    .api-section code {
-      background: var(--primary-light);
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
+    .collection-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79,70,229,0.08);
+    }
+    .collection-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .collection-count {
       font-size: 0.85rem;
+      color: var(--text-muted);
     }
-    .api-section ul {
-      list-style: none;
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
+    .collection-bar {
+      height: 4px;
+      background: var(--bg);
+      border-radius: 2px;
+      margin-top: 0.75rem;
+      overflow: hidden;
     }
-    .api-section li { padding: 0.25rem 0; }
-    .api-section a { color: var(--primary); }
+    .collection-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: width 0.6s ease-out;
+    }
+
+    /* API Docs section */
+    .api-docs { background: var(--card); border-top: 1px solid var(--border); }
+    .endpoint-list { display: flex; flex-direction: column; gap: 1rem; }
+    .endpoint {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .endpoint-method {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 5px;
+      background: var(--accent);
+      color: white;
+      flex-shrink: 0;
+    }
+    .endpoint-path {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .endpoint-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .endpoint-body {
+      display: none;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .endpoint.open .endpoint-body { display: block; }
+    .endpoint-body p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .code-block .comment { color: #64748b; }
+    .code-block .string { color: #86efac; }
+    .code-block .key { color: #93c5fd; }
+    .code-block .number { color: #fbbf24; }
+    .response-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--primary); text-decoration: none; }
 
     /* Loading */
     .loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.85rem; }
+      .hero p { font-size: 1rem; }
+      .hero-stats { gap: 1.5rem; }
+      .hero-stat .num { font-size: 1.5rem; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .endpoint-desc { display: none; }
+      .modal { padding: 1.5rem; }
+      .nav-links { gap: 1rem; }
+      .collections-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Hymnal</h1>
-  <p>Browse and search 4,485 hymns across 7 collections</p>
-</header>
-
-<div class="container">
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search by title or lyrics..." autofocus>
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Hymnal API</a>
+    <div class="nav-links">
+      <a href="#browse">Browse</a>
+      <a href="#collections">Collections</a>
+      <a href="#api-docs">API Docs</a>
+    </div>
   </div>
+</nav>
 
-  <div class="categories" id="categories"></div>
-  <div class="stats" id="stats"></div>
-  <div class="hymn-list" id="hymnList"><div class="loading">Loading hymns...</div></div>
-  <div class="pagination" id="pagination"></div>
-
-  <div class="api-section">
-    <h3>API Endpoints</h3>
-    <p>Use these URLs to access the data programmatically:</p>
-    <ul>
-      <li><code>GET</code> <a href="api/hymns.json" id="apiHymns">api/hymns.json</a> &mdash; All hymns (no lyrics)</li>
-      <li><code>GET</code> <a href="api/hymns/0.json">api/hymns/{id}.json</a> &mdash; Single hymn with lyrics</li>
-      <li><code>GET</code> <a href="api/categories.json" id="apiCats">api/categories.json</a> &mdash; All categories</li>
-      <li><code>GET</code> <a href="api/categories/1.json">api/categories/{id}.json</a> &mdash; Hymns by category</li>
-    </ul>
+<!-- Hero -->
+<section class="hero">
+  <h1>Hymnal API</h1>
+  <p>A free, open API serving hymnal data across 7 collections. Browse online or integrate into your app.</p>
+  <div class="hero-actions">
+    <a href="#browse" class="btn btn-white">Browse Hymns</a>
+    <a href="#api-docs" class="btn btn-outline">View API Docs</a>
   </div>
-</div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="num" id="heroTotal">4,485</span>
+      <span class="label">Hymns</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">7</span>
+      <span class="label">Collections</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">3</span>
+      <span class="label">Languages</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">Free</span>
+      <span class="label">Forever</span>
+    </div>
+  </div>
+</section>
 
-<!-- Hymn detail modal -->
+<!-- Browse -->
+<section id="browse" class="section">
+  <div class="container">
+    <h2 class="section-title">Browse Hymns</h2>
+    <p class="section-sub">Search by title across all collections.</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search hymns by title...">
+    </div>
+    <div class="categories" id="categories"></div>
+    <div class="stats" id="stats"></div>
+    <div class="hymn-list" id="hymnList"><div class="loading">Loading hymns...</div></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</section>
+
+<!-- Collections -->
+<section id="collections" class="section">
+  <div class="container">
+    <h2 class="section-title">Collections</h2>
+    <p class="section-sub">7 hymnal collections spanning Malagasy, French, and English.</p>
+    <div class="collections-grid" id="collectionsGrid"></div>
+  </div>
+</section>
+
+<!-- API Docs -->
+<section id="api-docs" class="section api-docs">
+  <div class="container">
+    <h2 class="section-title">API Documentation</h2>
+    <p class="section-sub">Free static JSON API. No authentication required. Fetch directly from GitHub Pages.</p>
+
+    <div class="endpoint-list">
+
+      <!-- GET all hymns -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+          <span class="endpoint-method">GET</span>
+          <span class="endpoint-path">/api/hymns.json</span>
+          <span class="endpoint-desc">All hymns (without lyrics)</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns an array of all 4,485 hymns. Lyrics are excluded to keep the response lightweight. Use the individual hymn endpoint to fetch lyrics.</p>
+          <div class="response-label">Example Response</div>
+          <div class="code-block">[
+  {
+    <span class="key">"ID"</span>: <span class="number">0</span>,
+    <span class="key">"Number"</span>: <span class="number">1</span>,
+    <span class="key">"Title"</span>: <span class="string">"Vous, qui sur la terre habitez"</span>,
+    <span class="key">"Author"</span>: <span class="number">null</span>,
+    <span class="key">"Key"</span>: <span class="string">""</span>,
+    <span class="key">"Category"</span>: <span class="number">2</span>,
+    <span class="key">"CategoryName"</span>: <span class="string">"Hymne et Louange"</span>,
+    <span class="key">"Active"</span>: <span class="number">1</span>
+  },
+  ...
+]</div>
+        </div>
+      </div>
+
+      <!-- GET single hymn -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+          <span class="endpoint-method">GET</span>
+          <span class="endpoint-path">/api/hymns/{id}.json</span>
+          <span class="endpoint-desc">Single hymn with lyrics</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns a single hymn by its ID, including the full lyrics broken into labeled verses. Each verse's text uses <code>\n</code> for line breaks.</p>
+          <div class="response-label">Example: /api/hymns/1.json</div>
+          <div class="code-block">{
+  <span class="key">"ID"</span>: <span class="number">1</span>,
+  <span class="key">"Number"</span>: <span class="number">1</span>,
+  <span class="key">"Title"</span>: <span class="string">"Praise to the Lord"</span>,
+  <span class="key">"Category"</span>: <span class="number">3</span>,
+  <span class="key">"CategoryName"</span>: <span class="string">"SDA Hymnal"</span>,
+  <span class="key">"Lyrics"</span>: [
+    {
+      <span class="key">"label"</span>: <span class="string">"1"</span>,
+      <span class="key">"text"</span>: <span class="string">"Praise to the Lord, the Almighty,\nthe King of creation!..."</span>
+    },
+    ...
+  ]
+}</div>
+        </div>
+      </div>
+
+      <!-- GET categories -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+          <span class="endpoint-method">GET</span>
+          <span class="endpoint-path">/api/categories.json</span>
+          <span class="endpoint-desc">All collections</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns a list of all hymnal collections with their ID, name, and hymn count.</p>
+          <div class="response-label">Response</div>
+          <div class="code-block">[
+  { <span class="key">"ID"</span>: <span class="number">1</span>, <span class="key">"Name"</span>: <span class="string">"Fihirana Advantista (Malagasy)"</span>, <span class="key">"count"</span>: <span class="number">802</span> },
+  { <span class="key">"ID"</span>: <span class="number">2</span>, <span class="key">"Name"</span>: <span class="string">"Hymne et Louange"</span>, <span class="key">"count"</span>: <span class="number">650</span> },
+  { <span class="key">"ID"</span>: <span class="number">3</span>, <span class="key">"Name"</span>: <span class="string">"SDA Hymnal"</span>, <span class="key">"count"</span>: <span class="number">695</span> },
+  { <span class="key">"ID"</span>: <span class="number">4</span>, <span class="key">"Name"</span>: <span class="string">"Chant Jeunesse"</span>, <span class="key">"count"</span>: <span class="number">6</span> },
+  { <span class="key">"ID"</span>: <span class="number">5</span>, <span class="key">"Name"</span>: <span class="string">"J'aime l'Eternel (JEM)"</span>, <span class="key">"count"</span>: <span class="number">998</span> },
+  { <span class="key">"ID"</span>: <span class="number">6</span>, <span class="key">"Name"</span>: <span class="string">"Fihirana Fanampiny (FFPM)"</span>, <span class="key">"count"</span>: <span class="number">814</span> },
+  { <span class="key">"ID"</span>: <span class="number">7</span>, <span class="key">"Name"</span>: <span class="string">"Donnez-Lui gloire"</span>, <span class="key">"count"</span>: <span class="number">520</span> }
+]</div>
+        </div>
+      </div>
+
+      <!-- GET hymns by category -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+          <span class="endpoint-method">GET</span>
+          <span class="endpoint-path">/api/categories/{id}.json</span>
+          <span class="endpoint-desc">Hymns by collection</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns all hymns belonging to a specific collection (without lyrics). Use category IDs 1 through 7.</p>
+          <div class="response-label">Example: /api/categories/3.json</div>
+          <div class="code-block"><span class="comment">// Returns 695 SDA Hymnal entries</span>
+[
+  {
+    <span class="key">"ID"</span>: <span class="number">1</span>,
+    <span class="key">"Number"</span>: <span class="number">1</span>,
+    <span class="key">"Title"</span>: <span class="string">"Praise to the Lord"</span>,
+    <span class="key">"CategoryName"</span>: <span class="string">"SDA Hymnal"</span>,
+    ...
+  },
+  ...
+]</div>
+        </div>
+      </div>
+
+    </div><!-- /endpoint-list -->
+
+    <div style="margin-top: 2rem; padding: 1.25rem; background: var(--primary-light); border-radius: var(--radius); font-size: 0.9rem;">
+      <strong>Quick start:</strong> Fetch all hymns in JavaScript:
+      <div class="code-block" style="margin-top: 0.75rem; background: #1e293b;">
+<span class="comment">// Fetch all hymns</span>
+<span class="key">const</span> res = <span class="key">await</span> fetch(<span class="string">'https://&lt;username&gt;.github.io/hymnal-api/api/hymns.json'</span>);
+<span class="key">const</span> hymns = <span class="key">await</span> res.json();
+
+<span class="comment">// Fetch a single hymn with lyrics</span>
+<span class="key">const</span> hymn = <span class="key">await</span> fetch(<span class="string">`https://&lt;username&gt;.github.io/hymnal-api/api/hymns/${id}.json`</span>)
+  .then(r => r.json());</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>Hymnal API &mdash; Free and open data for worship applications.</p>
+</footer>
+
+<!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <button class="modal-close" id="modalClose">&times;</button>
@@ -275,6 +702,7 @@ async function init() {
   allHymns = await hymnsRes.json();
   categories = await catsRes.json();
   renderCategories();
+  renderCollections();
   applyFilters();
 }
 
@@ -296,6 +724,20 @@ function renderCategories() {
   });
 }
 
+function renderCollections() {
+  const maxCount = Math.max(...categories.map(c => c.count));
+  const grid = document.getElementById('collectionsGrid');
+  grid.innerHTML = categories.map(c => `
+    <div class="collection-card">
+      <div class="collection-name">${esc(c.Name)}</div>
+      <div class="collection-count">${c.count.toLocaleString()} hymns</div>
+      <div class="collection-bar">
+        <div class="collection-bar-fill" style="width: ${(c.count / maxCount * 100).toFixed(1)}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
 function applyFilters() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   filtered = allHymns.filter(h => {
@@ -312,7 +754,7 @@ function renderList() {
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   document.getElementById('stats').textContent =
-    `${filtered.length} hymn${filtered.length !== 1 ? 's' : ''} found`;
+    `${filtered.length.toLocaleString()} hymn${filtered.length !== 1 ? 's' : ''} found`;
 
   const list = document.getElementById('hymnList');
   if (page.length === 0) {
@@ -353,30 +795,33 @@ document.getElementById('hymnList').addEventListener('click', async e => {
   const hymn = await res.json();
 
   document.getElementById('modalTitle').textContent = `${hymn.Number}. ${hymn.Title}`;
-  let meta = `<span>${hymn.CategoryName}</span>`;
-  if (hymn.Key) meta += `<span>Key: ${hymn.Key}</span>`;
-  if (hymn.Author) meta += `<span>${hymn.Author}</span>`;
+  let meta = `<span>${esc(hymn.CategoryName)}</span>`;
+  if (hymn.Key) meta += `<span>Key: ${esc(hymn.Key)}</span>`;
+  if (hymn.Author) meta += `<span>${esc(hymn.Author)}</span>`;
   document.getElementById('modalMeta').innerHTML = meta;
 
   document.getElementById('modalLyrics').innerHTML = hymn.Lyrics.map(v => `
     <div class="verse">
-      <div class="verse-label">${esc(v.label)}</div>
+      <div class="verse-label">Verse ${esc(v.label)}</div>
       <div class="verse-text">${esc(v.text)}</div>
     </div>
   `).join('');
 
   document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 });
 
 // Close modal
-document.getElementById('modalClose').addEventListener('click', () => {
+function closeModal() {
   document.getElementById('modal').classList.remove('open');
-});
+  document.body.style.overflow = '';
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) document.getElementById('modal').classList.remove('open');
+  if (e.target === e.currentTarget) closeModal();
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('modal').classList.remove('open');
+  if (e.key === 'Escape') closeModal();
 });
 
 // Search with debounce
