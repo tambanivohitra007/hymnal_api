@@ -526,9 +526,9 @@
 <section id="browse" class="section">
   <div class="container">
     <h2 class="section-title">Browse Hymns</h2>
-    <p class="section-sub">Search by title across all collections.</p>
+    <p class="section-sub">Search by title or lyrics across all collections.</p>
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search hymns by title...">
+      <input type="text" id="searchInput" placeholder="Search by title or lyrics...">
     </div>
     <div class="categories" id="categories"></div>
     <div class="stats" id="stats"></div>
@@ -689,21 +689,31 @@
 const PAGE_SIZE = 30;
 let allHymns = [];
 let categories = [];
+let searchIndex = {};  // ID -> lyrics text
 let filtered = [];
 let currentPage = 0;
 let activeCategory = null;
 let searchTimeout = null;
 
 async function init() {
-  const [hymnsRes, catsRes] = await Promise.all([
+  const [hymnsRes, catsRes, indexRes] = await Promise.all([
     fetch('api/hymns.json'),
-    fetch('api/categories.json')
+    fetch('api/categories.json'),
+    fetch('api/search-index.json')
   ]);
   allHymns = await hymnsRes.json();
   categories = await catsRes.json();
+  const indexData = await indexRes.json();
+  for (const entry of indexData) {
+    searchIndex[entry.i] = entry.t.toLowerCase();
+  }
   renderCategories();
   renderCollections();
   applyFilters();
+
+  // Handle initial hash route
+  handleHash();
+  window.addEventListener('hashchange', handleHash);
 }
 
 function renderCategories() {
@@ -742,8 +752,13 @@ function applyFilters() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   filtered = allHymns.filter(h => {
     if (activeCategory !== null && h.Category !== activeCategory) return false;
-    if (query && !h.Title.toLowerCase().includes(query)) return false;
-    return true;
+    if (!query) return true;
+    // Search title first
+    if (h.Title.toLowerCase().includes(query)) return true;
+    // Then search lyrics via search index
+    const lyrics = searchIndex[h.ID];
+    if (lyrics && lyrics.includes(query)) return true;
+    return false;
   });
   renderList();
 }
@@ -787,11 +802,9 @@ function renderList() {
 }
 
 // Open hymn detail
-document.getElementById('hymnList').addEventListener('click', async e => {
-  const card = e.target.closest('.hymn-card');
-  if (!card) return;
-  const id = card.dataset.id;
+async function openHymn(id, pushState) {
   const res = await fetch(`api/hymns/${id}.json`);
+  if (!res.ok) return;
   const hymn = await res.json();
 
   document.getElementById('modalTitle').textContent = `${hymn.Number}. ${hymn.Title}`;
@@ -809,12 +822,25 @@ document.getElementById('hymnList').addEventListener('click', async e => {
 
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // Update URL hash
+  if (pushState !== false) {
+    history.replaceState(null, '', `#/hymn/${id}`);
+  }
+}
+
+document.getElementById('hymnList').addEventListener('click', e => {
+  const card = e.target.closest('.hymn-card');
+  if (!card) return;
+  openHymn(card.dataset.id);
 });
 
 // Close modal
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   document.body.style.overflow = '';
+  // Clear hash without scrolling
+  history.replaceState(null, '', window.location.pathname + window.location.search);
 }
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', e => {
@@ -823,6 +849,15 @@ document.getElementById('modal').addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
+
+// Hash routing for shareable URLs
+function handleHash() {
+  const hash = window.location.hash;
+  const match = hash.match(/^#\/hymn\/(\d+)$/);
+  if (match) {
+    openHymn(match[1], false);
+  }
+}
 
 // Search with debounce
 document.getElementById('searchInput').addEventListener('input', () => {
