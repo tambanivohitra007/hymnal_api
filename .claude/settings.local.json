@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(del \"C:\\\\Users\\\\rindra\\\\Projects\\\\hymnal_api\\\\inspect_rtf.py\")",
+      "Bash(del \"C:\\\\Users\\\\rindra\\\\Projects\\\\hymnal_api\\\\strip_rtf_export.py\")",
+      "Bash(dir:*)",
+      "Bash(powershell:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:adventhymnals.github.io)"
+    ]
+  }
+}
